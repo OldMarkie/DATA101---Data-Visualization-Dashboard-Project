@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+  }
+  
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .dashboard-header, .dashboard-footer {
+    background-color: #282c34;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .dashboard-header h1 {
+    margin: 0;
+  }
+  
+  .dashboard-footer p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  
+  .dashboard > * {
+    margin: 1rem;
+  }
+  
