@@ -29,4 +29,14 @@ body {
   .dashboard > * {
     margin: 1rem;
   }
+
+  .map-container {
+    width: 100vw; /* 100% of the viewport width */
+    height: 100vh; /* 100% of the viewport height */
+    overflow: hidden;
+  }
+  
+
+  @import 'leaflet/dist/leaflet.css';
+
   

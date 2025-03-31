@@ -1,23 +1,19 @@
 import React from 'react';
 
-const DetailPanel = ({ country, dataType }) => {
-  // Replace these placeholders with your actual chart components (e.g., Plotly charts)
+const DetailPanel = ({ country, dataType, cancerData }) => {
+  const countryData = cancerData.find((item) => item.country === country || item.Country === country);
+
+  if (!countryData) {
+    return <p>No data available for {country}</p>;
+  }
+
   return (
     <div className="detail-panel">
       <h2>Details for {country}</h2>
-      {dataType === 'lung' ? (
-        <div>
-          <h3>Lung Cancer Data</h3>
-          <p>Histogram of lung cancer prevalence in {country}.</p>
-          <p>Bar chart comparing risk factors and mortality rates.</p>
-        </div>
-      ) : (
-        <div>
-          <h3>Thyroid Cancer Data</h3>
-          <p>Bar chart comparing malignancy rates.</p>
-          <p>Biomarker density estimation and SHAP summary plot.</p>
-        </div>
-      )}
+      <p><strong>{dataType === 'lung' ? 'Lung Cancer Rate' : 'Thyroid Cancer Rate'}:</strong> {countryData[dataType === 'lung' ? 'Lung Cancer Rate' : 'Thyroid Cancer Rate']}</p>
+      <p><strong>Population:</strong> {countryData.Population}</p>
+      <p><strong>Risk Factors:</strong> {countryData.Risk_Factors || 'N/A'}</p>
+      <p><strong>Mortality Rate:</strong> {countryData.Mortality_Rate || 'N/A'}</p>
     </div>
   );
 };
