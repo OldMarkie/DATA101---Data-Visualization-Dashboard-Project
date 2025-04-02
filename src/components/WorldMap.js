@@ -77,7 +77,7 @@ const WorldMap = () => {
     const countryName = feature.properties?.name;
     const isThyroid = thyroidCountries.has(countryName);
     const isLung = lungCountries.has(countryName);
-    
+
     layer.bindTooltip(countryName, { permanent: false, direction: 'auto' });
 
     layer.setStyle(getCountryStyle(feature));
@@ -97,13 +97,21 @@ const WorldMap = () => {
     const map = useMap();
     useEffect(() => {
       if (!mapInteractive) {
-        map.dragging.disable();
-        map.scrollWheelZoom.disable();
-        map.doubleClickZoom.disable();
+        // Disable all map interactivity by setting options directly
+        map.options.dragging = false;
+        map.options.scrollWheelZoom = false;
+        map.options.doubleClickZoom = false;
+        map.options.touchZoom = false;
+
+        map._container.style.pointerEvents = "none"; // Disable mouse events on the map
       } else {
-        map.dragging.enable();
-        map.scrollWheelZoom.enable();
-        map.doubleClickZoom.enable();
+        // Re-enable interactivity if mapInteractive is true
+        map.options.dragging = true;
+        map.options.scrollWheelZoom = true;
+        map.options.doubleClickZoom = true;
+        map.options.touchZoom = true;
+
+        map._container.style.pointerEvents = "auto"; // Enable mouse events on the map
       }
     }, [mapInteractive, map]);
     return null;
@@ -118,7 +126,15 @@ const WorldMap = () => {
         setDataType={setDataType} 
       />
 
-      <MapContainer className="map-container" center={[20, 0]} zoom={2.5}>
+      <MapContainer
+        className="map-container"
+        center={[20, 0]}
+        zoom={2}
+        scrollWheelZoom={false} // Disable zooming by scroll
+        dragging={false} // Disable panning
+        doubleClickZoom={false} // Disable zooming by double-click
+        touchZoom={false} // Disable zooming on touch devices
+      >
         <TileLayer
           url="https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://stamen.com/">Stamen Design</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
