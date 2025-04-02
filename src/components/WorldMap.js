@@ -134,6 +134,7 @@ const WorldMap = () => {
         dragging={false} // Disable panning
         doubleClickZoom={false} // Disable zooming by double-click
         touchZoom={false} // Disable zooming on touch devices
+        zoomControl={false} // Disable zoom control (buttons)
       >
         <TileLayer
           url="https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png"

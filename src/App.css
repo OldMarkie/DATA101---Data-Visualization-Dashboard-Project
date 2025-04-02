@@ -58,6 +58,32 @@ path:hover {
   position: relative;
 }
 
+/* Ensures the map container takes the full screen size */
+/* Ensures the map container wraps around the content */
+.map-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height to center the content vertically */
+  width: 100%;   /* Full width of the screen */
+}
+
+.map-container-wrapper {
+  width: 80%;   /* Adjust this to change the map width */
+  max-width: 800px; /* You can also set a max width for better control */
+  height: auto;  /* Adjust height to fit content */
+  display: flex;
+  align-items: center;
+}
+
+.map-container {
+  width: 100%;   /* Make the map fit the container's width */
+  height: 1000px;  /* Set a fixed height for the map */
+  border: 1px solid #ddd; /* Optional: Adds a border around the map */
+}
+
+
+
   
 
   @import 'leaflet/dist/leaflet.css';

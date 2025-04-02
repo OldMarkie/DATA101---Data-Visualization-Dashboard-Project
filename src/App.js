@@ -7,10 +7,6 @@ function App() {
   return (
     <div>
       <h1>World Cancer Data Visualization</h1>
-      <select onChange={(e) => setDataType(e.target.value)}>
-        <option value="lung">Lung Cancer</option>
-        <option value="thyroid">Thyroid Cancer</option>
-      </select>
       <WorldMap dataType={dataType} />
     </div>
   );
