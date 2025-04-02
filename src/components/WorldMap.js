@@ -14,6 +14,7 @@ const WorldMap = () => {
   const [dataType, setDataType] = useState('lung');
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [mapInteractive, setMapInteractive] = useState(true);
+  const [sideMenuOpen, setSideMenuOpen] = useState(false); // State to manage side menu visibility
 
   const normalizeCountryName = (name) => {
     const countryMap = {
@@ -79,7 +80,6 @@ const WorldMap = () => {
     const isLung = lungCountries.has(countryName);
 
     layer.bindTooltip(countryName, { permanent: false, direction: 'auto' });
-
     layer.setStyle(getCountryStyle(feature));
 
     layer.on({
@@ -117,6 +117,10 @@ const WorldMap = () => {
     return null;
   };
 
+  const toggleSideMenu = (open) => {
+    setSideMenuOpen(open);
+  };
+
   return (
     <div>
       <FilterPanel 
@@ -124,6 +128,7 @@ const WorldMap = () => {
         setSelectedCountry={setSelectedCountry} 
         dataType={dataType} 
         setDataType={setDataType} 
+        toggleSideMenu={toggleSideMenu} // Pass the toggle function to FilterPanel
       />
 
       <MapContainer

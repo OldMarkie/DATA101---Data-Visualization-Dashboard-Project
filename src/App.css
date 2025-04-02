@@ -82,6 +82,51 @@ path:hover {
   border: 1px solid #ddd; /* Optional: Adds a border around the map */
 }
 
+/* Filter Panel */
+.filter-panel {
+  position: fixed;
+  top: 50%;
+  right: 0; /* Align the panel to the right side of the screen */
+  transform: translateY(-50%); /* Center the panel vertically */
+  z-index: 10;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-button {
+  padding: 15px;
+  font-size: 16px;
+  background-color: #005bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 200px; /* Adjust width to fit your design */
+  text-align: center;
+}
+
+.filter-button:hover {
+  background-color: #003b7a;
+}
+
+.filter-button.active {
+  background-color: #003b7a;
+  font-weight: bold;
+}
+
+
+
+
+
+
 
 
   

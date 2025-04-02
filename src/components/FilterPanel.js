@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 
-const FilterPanel = ({ selectedCountry, setSelectedCountry, dataType, setDataType }) => {
+const FilterPanel = ({ selectedCountry, setSelectedCountry, dataType, setDataType, toggleSideMenu }) => {
   const [countries, setCountries] = useState([]);
+  const [sideMenuOpen, setSideMenuOpen] = useState(false); // Add state to manage side menu visibility
 
   const normalizeCountryName = (name) => {
     const countryMap = {
-      'USA': 'United States of America',
-      'UK': 'United Kingdom',
-      'DR Congo': 'Democratic Republic of the Congo'
+      'usa': 'United States of America',
+      'uk': 'United Kingdom',
+      'dr congo': 'Dem. Rep. Congo'
     };
     return countryMap[name] || name;
   };
@@ -37,30 +38,51 @@ const FilterPanel = ({ selectedCountry, setSelectedCountry, dataType, setDataTyp
 
   const handleDataTypeChange = (e) => {
     setDataType(e.target.value);
+    setSideMenuOpen(true);  // Open the side menu when changing data type
+    toggleSideMenu(true); // Notify the parent component (WorldMap)
   };
 
   const handleCountryChange = (e) => {
     setSelectedCountry(e.target.value);
   };
 
+  const toggleMenu = () => {
+    setSideMenuOpen(prevState => !prevState);  // Toggle the side menu visibility
+    toggleSideMenu(!sideMenuOpen);  // Pass the current state to the parent component
+  };
+
   return (
     <div className="filter-panel">
-      <label>
-        Select Data Type: 
-        <select value={dataType} onChange={handleDataTypeChange}>
-          <option value="lung">Lung Cancer</option>
-          <option value="thyroid">Thyroid Cancer</option>
-        </select>
-      </label>
-      <label>
-        Select Country: 
-        <select value={selectedCountry || ''} onChange={handleCountryChange}>
-          <option value="">--Choose a country--</option>
-          {countries.map((country, index) => (
-            <option key={index} value={country}>{country}</option>
-          ))}
-        </select>
-      </label>
+      <div className="button-group">
+        <button 
+          onClick={() => {
+            setDataType('lung');
+            setSideMenuOpen(true);  // Open side menu on button click
+            toggleSideMenu(true);  // Notify the parent component (WorldMap)
+          }}
+          className={`filter-button ${dataType === 'lung' ? 'active' : ''}`}
+        >
+          Lung Cancer
+        </button>
+        <button 
+          onClick={() => {
+            setDataType('thyroid');
+            setSideMenuOpen(true);  // Open side menu on button click
+            toggleSideMenu(true);  // Notify the parent component (WorldMap)
+          }}
+          className={`filter-button ${dataType === 'thyroid' ? 'active' : ''}`}
+        >
+          Thyroid Cancer
+        </button>
+      </div>
+
+      {/* Conditionally render the side menu */}
+      {sideMenuOpen && (
+        <div className="side-menu">
+          <h3>Side Menu</h3>
+          <button onClick={toggleMenu}>Close Menu</button>
+        </div>
+      )}
     </div>
   );
 };
