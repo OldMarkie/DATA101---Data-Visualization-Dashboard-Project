@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancer Data Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .chart-container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cancer Data Dashboard</h1>
+    
+    <div class="chart-container">
+        <h2>Lung Cancer Prevalence by Country</h2>
+        <div>{{ fig1 | safe }}</div>
+    </div>
+    
+    <div class="chart-container">
+        <h2>Smoking vs. Lung Cancer Prevalence</h2>
+        <div>{{ fig2 | safe }}</div>
+    </div>
+    
+    <div class="chart-container">
+        <h2>Thyroid Cancer Risk by Country</h2>
+        <div>{{ fig3 | safe }}</div>
+    </div>
+    
+    <div class="chart-container">
+        <h2>Thyroid Cancer Risk Factors Distribution</h2>
+        <div>{{ fig4 | safe }}</div>
+    </div>
+</body>
+</html>
