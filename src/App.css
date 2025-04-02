@@ -36,6 +36,29 @@ body {
     overflow: hidden;
   }
   
+  /* Ensure all country paths have borders */
+path {
+  stroke: black;
+  stroke-width: 0.5px;
+  fill-opacity: 1; /* Ensure the fill does not fully cover the border */
+}
+
+/* Maintain border visibility when hovering */
+path:hover {
+  stroke: black !important;
+  stroke-width: 0.7px; /* Slightly thicker on hover for clarity */
+}
+
+.ReactModal__Overlay {
+  z-index: 1000 !important;
+}
+
+.ReactModal__Content {
+  z-index: 1001 !important;
+  position: relative;
+}
+
+  
 
   @import 'leaflet/dist/leaflet.css';
 
