@@ -34,7 +34,7 @@
             height: 100%;
             width: 0%;
             background-color: #007bff;
-            transition: width 1s linear;
+            transition: width 0.3s linear;
         }
         .navigation {
             margin-top: 10px;
@@ -74,77 +74,58 @@
     </div>
 
     <script>
-        // Add new risk factor maps to the list
         let cancerTypes = [
-            "lung",                // Lung Cancer Prevalence & Deaths
-            "thyroid",             // Thyroid Cancer data
-            "prevalence",          // Lung Cancer Prevalence Rate
-            "deaths",              // Annual Lung Cancer Deaths
-            "development",         // Developed vs Developing Countries
-            "radiation_exposure",  // Radiation Exposure by Country
-            "smoking",             // Smoking by Country
-            "obesity",             // Obesity by Country
-            "diabetes"             // Diabetes by Country
+            "lung", "thyroid", "prevalence", "deaths", "development",
+            "radiation_exposure", "smoking", "obesity", "diabetes"
         ];
     
         let index = 0;
         let intervalTime = 30000; // 30 seconds
         let progressBar = document.getElementById("progress-bar");
-        let progressStep = 100 / (intervalTime / 1000);
+        let progressInterval;
     
-        // Function to load the map based on the cancer type
         function loadCancerMap() {
             let cancerType = cancerTypes[index];
             $.getJSON(`/highlight_map/${cancerType}`, function(data) {
                 $("#map-container").html(data.map_html);
             });
-    
             resetProgressBar();
         }
     
-        // Function to manually switch to the previous map
         function prevCancerMap() {
             index = (index - 1 + cancerTypes.length) % cancerTypes.length;
             loadCancerMap();
         }
     
-        // Function to manually switch to the next map
         function nextCancerMap() {
             index = (index + 1) % cancerTypes.length;
             loadCancerMap();
         }
     
-        // Progress Bar Animation
-        function updateProgressBar() {
-            let width = 0;
-            progressBar.style.width = "0%";
-            let interval = setInterval(() => {
-                if (width >= 100) {
-                    clearInterval(interval);
-                } else {
-                    width += progressStep;
-                    progressBar.style.width = width + "%";
-                }
-            }, 1000); // Update every second
-        }
-    
         function resetProgressBar() {
+            clearInterval(progressInterval); // Stop any existing animation
             progressBar.style.width = "0%";
-            updateProgressBar();
+            animateProgressBar();
         }
     
-        // Auto-switch maps every 30 seconds
+        function animateProgressBar() {
+            let startTime = performance.now();
+            function step(currentTime) {
+                let elapsed = currentTime - startTime;
+                let progress = Math.min(elapsed / intervalTime, 1);
+                progressBar.style.width = (progress * 100) + "%";
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+    
         setInterval(() => {
-            nextCancerMap(); // Automatically load next map
+            nextCancerMap();
         }, intervalTime);
     
-        // Start progress bar animation initially
-        updateProgressBar();
-    
-        // Initial map load
         loadCancerMap();
     </script>
-    
-    
 </body>
 </html>
