@@ -5,39 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cancer Data Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
         }
         .chart-container {
-            width: 80%;
+            width: 90%;
             margin: auto;
             padding: 20px;
+        }
+        #map-container {
+            width: 90%;
+            height: 600px;
+            margin: auto;
+        }
+        .progress-bar {
+            width: 90%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px auto;
+            position: relative;
+        }
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: #007bff;
+            transition: width 1s linear;
+        }
+        .navigation {
+            margin-top: 10px;
+        }
+        .nav-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <h1>Cancer Data Dashboard</h1>
-    
-    <div class="chart-container">
-        <h2>Lung Cancer Prevalence by Country</h2>
-        <div>{{ fig1 | safe }}</div>
+
+    <!-- Container for the map -->
+    <div id="map-container">
+        {{ main_map | safe }}
     </div>
-    
-    <div class="chart-container">
-        <h2>Smoking vs. Lung Cancer Prevalence</h2>
-        <div>{{ fig2 | safe }}</div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress" id="progress-bar"></div>
     </div>
-    
-    <div class="chart-container">
-        <h2>Thyroid Cancer Risk by Country</h2>
-        <div>{{ fig3 | safe }}</div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation">
+        <button class="nav-button" onclick="prevCancerMap()">&#8592; Previous</button>
+        <button class="nav-button" onclick="nextCancerMap()">Next &#8594;</button>
     </div>
+
+    <script>
+        // Add new risk factor maps to the list
+        let cancerTypes = [
+            "lung",                // Lung Cancer Prevalence & Deaths
+            "thyroid",             // Thyroid Cancer data
+            "radiation_exposure",  // Radiation Exposure by Country
+            "smoking",             // Smoking by Country
+            "obesity",             // Obesity by Country
+            "diabetes"             // Diabetes by Country
+        ];
     
-    <div class="chart-container">
-        <h2>Thyroid Cancer Risk Factors Distribution</h2>
-        <div>{{ fig4 | safe }}</div>
-    </div>
+        let index = 0;
+        let intervalTime = 30000; // 30 seconds
+        let progressBar = document.getElementById("progress-bar");
+        let progressStep = 100 / (intervalTime / 1000);
+    
+        // Function to load the map based on the cancer type
+        function loadCancerMap() {
+            let cancerType = cancerTypes[index];
+            $.getJSON(`/highlight_map/${cancerType}`, function(data) {
+                $("#map-container").html(data.map_html);
+            });
+    
+            resetProgressBar();
+        }
+    
+        // Function to manually switch to the previous map
+        function prevCancerMap() {
+            index = (index - 1 + cancerTypes.length) % cancerTypes.length;
+            loadCancerMap();
+        }
+    
+        // Function to manually switch to the next map
+        function nextCancerMap() {
+            index = (index + 1) % cancerTypes.length;
+            loadCancerMap();
+        }
+    
+        // Progress Bar Animation
+        function updateProgressBar() {
+            let width = 0;
+            progressBar.style.width = "0%";
+            let interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width += progressStep;
+                    progressBar.style.width = width + "%";
+                }
+            }, 1000); // Update every second
+        }
+    
+        function resetProgressBar() {
+            progressBar.style.width = "0%";
+            updateProgressBar();
+        }
+    
+        // Auto-switch maps every 30 seconds
+        setInterval(() => {
+            nextCancerMap(); // Automatically load next map
+        }, intervalTime);
+    
+        // Start progress bar animation initially
+        updateProgressBar();
+    
+        // Initial map load
+        loadCancerMap();
+    </script>
+    
+    
 </body>
 </html>
