@@ -18,17 +18,14 @@ def generate_highlight_map(data, title):
         data,
         locations="Country",
         locationmode="country names",
-        color="Country",  # Use a dummy variable for coloring to enable the color scale
-        color_discrete_map={"Country": "#ff69b4"},  # Set all countries to hot pink
+        color="Country",
+        color_discrete_map={"Country": "#ff69b4"},
         title=title
     )
-
-    # Update the layout to show color scale (legend)
     fig.update_layout(
-        coloraxis_showscale=True,  # Display the color scale (legend)
-        coloraxis_colorbar_title="Highlighted Countries"  # Title for the color bar
+        coloraxis_showscale=True,
+        coloraxis_colorbar_title="Highlighted Countries"
     )
-
     return fig.to_html(full_html=False)
 
 def generate_thyroid_choropleth(df, column_name, title):
@@ -42,9 +39,39 @@ def generate_thyroid_choropleth(df, column_name, title):
         locationmode="country names",
         color="Yes_Percentage",
         hover_name="Country",
-        color_continuous_scale="YlOrRd",  # Light yellow to dark red
+        color_continuous_scale="YlOrRd",
         title=title,
         labels={"Yes_Percentage": "Percentage (%)"}
+    )
+    return fig.to_html(full_html=False)
+
+def generate_lung_cancer_maps(df_lung, map_type):
+    if map_type == "prevalence":
+        country_prevalence = df_lung.groupby("Country")["Lung_Cancer_Prevalence_Rate"].mean().round(3).reset_index()
+        title = "Lung Cancer Prevalence Rate by Country"
+        color = "Lung_Cancer_Prevalence_Rate"
+    elif map_type == "deaths":
+        country_prevalence = df_lung.groupby("Country")["Annual_Lung_Cancer_Deaths"].mean().round(3).reset_index()
+        title = "Annual Lung Cancer Deaths by Country"
+        color = "Annual_Lung_Cancer_Deaths"
+    elif map_type == "development":
+        development_mapping = {"Developed": 1, "Developing": 2}
+        df_lung["Development_Status_Num"] = df_lung["Developed_or_Developing"].map(development_mapping)
+        country_prevalence = df_lung.groupby("Country")["Development_Status_Num"].mean().round(0).reset_index()
+        inverse_mapping = {1: "Developed", 2: "Developing"}
+        country_prevalence["Developed_or_Developing"] = country_prevalence["Development_Status_Num"].map(inverse_mapping)
+        title = "Developed vs. Developing Countries"
+        color = "Developed_or_Developing"
+    
+    fig = px.choropleth(
+        country_prevalence,
+        locations="Country",
+        locationmode="country names",
+        color=color,
+        hover_name="Country",
+        color_continuous_scale="Reds" if map_type != "development" else None,
+        color_discrete_map={"Developed": "green", "Developing": "red"} if map_type == "development" else None,
+        title=title,
     )
     return fig.to_html(full_html=False)
 
@@ -52,15 +79,12 @@ def generate_thyroid_choropleth(df, column_name, title):
 def home():
     lung_df, thyroid_df = load_data()
     countries_lung = lung_df[["Country"]].drop_duplicates()
-    
-    # Render the main map with lung cancer data
     main_map = generate_highlight_map(countries_lung, "Countries with Lung Cancer Data")
     return render_template('dashboard.html', main_map=main_map)
 
 @app.route('/highlight_map/<cancer_type>')
 def highlight_map(cancer_type):
     lung_df, thyroid_df = load_data()
-    
     if cancer_type == "lung":
         data = lung_df[["Country"]].drop_duplicates()
         title = "Countries with Lung Cancer Data"
@@ -77,6 +101,12 @@ def highlight_map(cancer_type):
         map_html = generate_thyroid_choropleth(thyroid_df, "Obesity", "Obesity Percentage by Country")
     elif cancer_type == "diabetes":
         map_html = generate_thyroid_choropleth(thyroid_df, "Diabetes", "Diabetes Percentage by Country")
+    elif cancer_type == "prevalence":
+        map_html = generate_lung_cancer_maps(lung_df, "prevalence")
+    elif cancer_type == "deaths":
+        map_html = generate_lung_cancer_maps(lung_df, "deaths")
+    elif cancer_type == "development":
+        map_html = generate_lung_cancer_maps(lung_df, "development")
     else:
         return jsonify({"error": "Invalid cancer type"}), 400
     
