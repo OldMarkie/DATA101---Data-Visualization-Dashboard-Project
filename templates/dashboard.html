@@ -92,24 +92,86 @@
     </div>
 
     <script>
-       function loadMortalityCharts() {
-        $.getJSON("/mortality_chart", function(data) {
+      function loadMortalityCharts() {
+    $.getJSON("/mortality_chart", function(data) {
         let chartContainer = $("#bar-charts");
         chartContainer.html(""); // Clear previous charts
 
         Object.keys(data).forEach((key) => {
+            console.log("Key from data:", key); // Log the key to the console for debugging
             let chartDiv = $("<div class='chart-wrapper'></div>"); 
             let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]); 
+
+            let sampleTextContainer;
             
-            let sampleTextContainer = $("<div class='sample-text-container'></div>").text("Sample Text for " + key);
-            
+            // Replace sample text with specific descriptions based on key
+            switch(key) {
+                case "Early_Detection":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Early Detection:</strong><br>
+                        This graph shows the average mortality rates for individuals diagnosed with lung cancer early versus those diagnosed later. The x-axis represents two categories: 'Yes' (early detection) and 'No' (no early detection). The y-axis represents the average death rate. The bars are color-coded, with green for 'Yes' and red for 'No.' The heights of the bars indicate the difference in mortality between the two groups.
+                    `);
+                    break;
+                case "Treatment_Type":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Treatment Type:</strong><br>
+                        This graph compares the average mortality rates among individuals receiving different treatments: Chemotherapy, Radiotherapy, Surgery. The x-axis has the 3 different treatment types, while the y-axis shows the corresponding average mortality rate. All bars are shaded in blue for neutral comparison, with their heights representing the mortality rate associated with each treatment.
+                    `);
+                    break;
+                case "Healthcare_Access":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Healthcare Access:</strong><br>
+                        This graph displays the average mortality rates for individuals with different levels of healthcare access. The x-axis has two categories: 'Good' and 'Poor,' with the bars colored green and red, respectively. The y-axis represents the average mortality rate. The heights of the bars illustrate how mortality rates compare between these two groups.
+                    `);
+                    break;
+                case "Smoker":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Smoking:</strong><br>
+                        This graph presents the average mortality rates for smokers and non-smokers. The x-axis distinguishes between 'Yes' (smokers) and 'No' (non-smokers), while the y-axis measures the average mortality rate. The bars are colored red for 'Yes' and green for 'No,' with their heights reflecting the respective mortality rates of each group.
+                    `);
+                    break;
+                case "Age_Group":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Age Group:</strong><br>
+                        This graph compares the average mortality rates across different age groups. The x-axis represents various age groups, while the y-axis shows the corresponding average mortality rate. The bars are color-coded to indicate the mortality rate associated with each group.
+                    `);
+                    break;
+                case "Air_Pollution_Exposure":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Air Pollution Exposure:</strong><br>
+                        This graph compares the mortality rates of individuals exposed to different levels of air pollution. The x-axis represents levels of exposure, while the y-axis shows the mortality rate. The heights of the bars indicate how mortality rates differ based on exposure levels.
+                    `);
+                    break;
+                case "Indoor_Pollution":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Indoor Pollution:</strong><br>
+                        This graph shows how indoor pollution affects mortality rates. The x-axis represents different levels of indoor pollution, and the y-axis shows the average mortality rate. The bars indicate the variation in mortality rates based on pollution levels.
+                    `);
+                    break;
+                case "Occupational_Exposure":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Occupational Exposure:</strong><br>
+                        This graph compares the mortality rates of individuals exposed to different occupational hazards. The x-axis represents various occupational exposures, and the y-axis shows the average mortality rate for each exposure category.
+                    `);
+                    break;
+                case "Gender":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Effect of Gender:</strong><br>
+                        This graph compares the mortality rates between genders. The x-axis represents the two genders, while the y-axis shows the average mortality rate for each gender group. The bars indicate how mortality rates differ between men and women.
+                    `);
+                    break;
+                default:
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").text("No description available.");
+            }
+
             chartDiv.append(chartInnerDiv); // Append the chart first
-            chartDiv.append(sampleTextContainer); // Append text separately
+            chartDiv.append(sampleTextContainer); // Append description text separately
 
             chartContainer.append(chartDiv); // Append the entire structure
         });
     });
 }
+
 
 
     $(document).ready(function() {
@@ -147,7 +209,7 @@
 }
 
 
-        .sample-text-container {
+.sample-text-container {
     font-size: 14px;
     color: #333;
     background-color: #f9f9f9;
@@ -155,9 +217,10 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     min-width: 150px;
-    text-align: center;
+    text-align: justify; /* This makes the text justified */
     margin-left: 10px; /* Pushes text away from chart */
 }
+
     </style>
 
     <script>

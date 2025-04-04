@@ -258,6 +258,7 @@ def highlight_map(cancer_type):
                 tickmode="array"
             ),
             coloraxis=dict(
+                
                 cmin=0,
                 cmax=40,
                 colorscale="Reds"
