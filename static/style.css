@@ -2,7 +2,62 @@ body {
     font-family: Arial, sans-serif;
 }
 
+.map-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers everything inside */
+    justify-content: center; /* Centers vertically if needed */
+    width: 100%;
+    max-width: 900px; /* Adjust based on your design */
+    margin: 0 auto; /* Centers the whole wrapper */
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+}
 
+#map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.progress-bar {
+    width: 80%;
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.progress {
+    height: 100%;
+    background: #007bff;
+    border-radius: 5px;
+    width: 0%; /* This should be updated dynamically */
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.nav-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-button:hover {
+    background: #0056b3;
+}
 
 
 

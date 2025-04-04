@@ -12,65 +12,120 @@
             text-align: center;
         }
         .chart-container {
-            width: 90%;
-            margin: auto;
-            padding: 20px;
-        }
-        #map-container {
-            width: 90%;
-            height: 420px;
-            margin: auto;
-        }
-        .progress-bar {
-            width: 90%;
-            height: 10px;
-            background-color: #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px auto;
-            position: relative;
-        }
-        .progress {
-            height: 100%;
-            width: 0%;
-            background-color: #007bff;
-            transition: width 0.3s linear;
-        }
-        .navigation, .tabs {
-            margin-top: 5px; /* Reduced margin for closer buttons */
-        }
-        .nav-button, .tab-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            margin: 5px;
-        }
-        .nav-button:hover, .tab-button:hover {
-            background-color: #0056b3;
-        }
-        .tab-button.active {
-            background-color: #0056b3;
-        }
-        .navigation {
-            display: flex;
-            justify-content: center;
-            gap: 10px; /* Added gap between buttons */
-        }
+    display: flex;
+    flex-direction: column; /* Stack charts vertically */
+    align-items: center; /* Center charts horizontally */
+    gap: 20px; /* Space between charts */
+    padding: 30px;
+}
+.map-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers everything inside */
+    justify-content: center; /* Centers vertically if needed */
+    width: 100%;
+    max-width: 900px; /* Adjust based on your design */
+    margin: 0 auto; /* Centers the whole wrapper */
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.progress-bar {
+    width: 80%;
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.progress {
+    height: 100%;
+    background: #007bff;
+    border-radius: 5px;
+    width: 0%; /* This should be updated dynamically */
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.nav-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-button:hover {
+    background: #0056b3;
+}
+
+       /* Modern tab styling */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.tab-button {
+    background: #f0f0f0;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    color: #333;
+}
+
+.tab-button:hover {
+    background: #e0e0e0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.tab-button.active {
+    background: #4A90E2;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+}
+
+       
     </style>
 </head>
 <body>
     <h1>Cancer Data Dashboard</h1>
 
-    <!-- Tabs for selecting Lungs or Thyroid -->
-    <div class="tabs">
-        <button class="tab-button active" onclick="switchTab('lungs')">Lungs</button>
-        <button class="tab-button" onclick="switchTab('thyroid')">Thyroids</button>
-    </div>
+   <!-- Tabs for selecting Lungs, Thyroid, Dataset, and Links -->
+<div class="tabs">
+    <button class="tab-button active" onclick="switchTab('lungs')">Lungs</button>
+    <button class="tab-button" onclick="switchTab('thyroid')">Thyroids</button>
+    <button class="tab-button" onclick="switchTab('dataset')">Dataset</button>
+    <button class="tab-button" onclick="switchTab('links')">Links</button>
+</div>
 
+
+    <!-- Wrapper Container -->
+<div class="map-wrapper">
     <!-- Container for the map -->
     <div id="map-container">
         {{ main_map | safe }}
@@ -83,13 +138,33 @@
 
     <!-- Navigation Buttons -->
     <div class="navigation">
-        <button class="nav-button" onclick="prevCancerMap()">&#8592;  </button>
-        <button class="nav-button" onclick="nextCancerMap()"> &#8594;</button>
+        <button class="nav-button" onclick="prevCancerMap()">&#8592;</button>
+        <button class="nav-button" onclick="nextCancerMap()">&#8594;</button>
     </div>
+</div>
+
 
     <div class="chart-container">
         <div id="bar-charts"></div>
     </div>
+
+    <!-- Dataset Tab Content -->
+<div id="dataset-tab-content" style="display:none; padding: 30px;">
+    <h2>Dataset Information</h2>
+    <p>This section provides access to the raw datasets used in the dashboard.</p>
+    <!-- You can add a download button, table, or embedded data viewer here -->
+</div>
+
+<!-- Links Tab Content -->
+<div id="links-tab-content" style="display:none; padding: 30px;">
+    <h2>Useful Links</h2>
+    <ul style="text-align: left;">
+        <li><a href="https://www.cancer.gov/" target="_blank">National Cancer Institute</a></li>
+        <li><a href="https://www.who.int/" target="_blank">World Health Organization</a></li>
+        <li><a href="https://seer.cancer.gov/" target="_blank">SEER Cancer Statistics</a></li>
+    </ul>
+</div>
+
 
     <script>
       function loadMortalityCharts() {
@@ -272,20 +347,29 @@
         }
 
         function switchTab(tabName) {
-            currentTab = tabName;
-    index = 0; // Reset index when switching tabs
+    currentTab = tabName;
+    index = 0;
+
+    // Handle active tab button
     document.querySelectorAll(".tab-button").forEach(button => button.classList.remove("active"));
-    document.querySelector(`.tab-button:nth-child(${tabName === 'lungs' ? 1 : 2})`).classList.add("active");
+    let tabIndex = tabName === 'lungs' ? 0 : tabName === 'thyroid' ? 1 : tabName === 'dataset' ? 2 : 3;
+    document.querySelectorAll(".tab-button")[tabIndex].classList.add("active");
 
-    loadCancerMap();
+    // Hide/show sections
+    $("#map-container").parent().toggle(tabName === "lungs" || tabName === "thyroid");
+    $(".chart-container").toggle(tabName === "lungs" || tabName === "thyroid");
+    $("#dataset-tab-content").toggle(tabName === "dataset");
+    $("#links-tab-content").toggle(tabName === "links");
 
-    // Load mortality charts based on the selected tab
     if (tabName === "lungs") {
-        loadMortalityCharts(); // Load for lungs
+        loadCancerMap();
+        loadMortalityCharts();
     } else if (tabName === "thyroid") {
-        loadThyroidMortalityCharts(); // Load for thyroid
+        loadCancerMap();
+        loadThyroidMortalityCharts();
     }
 }
+
 
 // New function to load thyroid mortality charts
 function loadThyroidMortalityCharts() {
@@ -294,13 +378,69 @@ function loadThyroidMortalityCharts() {
         chartContainer.html(""); // Clear previous charts
 
         Object.keys(data).forEach((key) => {
-            let chartDiv = $("<div class='chart-wrapper'></div>"); 
-            let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]); 
-            
-            let sampleTextContainer = $("<div class='sample-text-container'></div>").text("Sample Text for " + key);
-            
+            console.log("Key from data:", key); // Log the key to the console for debugging
+
+            let chartDiv = $("<div class='chart-wrapper'></div>");
+            let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]);
+
+            let sampleTextContainer;
+
+            // Replace sample text with specific descriptions based on key
+            switch(key) {
+                case "Age_Group":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Malignancy Rate by Age Group:</strong><br>
+                        This graph presents the malignancy rates for different age groups: individuals under 30, those between 30 and 60, and those over 60. The x-axis categorizes these age groups, while the y-axis represents the proportion of malignant thyroid cancer cases within each group. The bars are color-coded in green, orange, and red to differentiate between lower, medium, and higher age groups, with their heights indicating the relative malignancy rates.
+                    `);
+                    break;
+                case "Gender":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Malignancy Rate by Gender:</strong><br>
+                        This graph compares the malignancy rates of thyroid cancer between males and females. The x-axis categorizes the two genders, while the y-axis represents the proportion of malignant cases within each group. The bars are color-coded, with pink representing females and blue representing males. The heights of the bars reflect the malignancy rates for each gender.
+                    `);
+                    break;
+                case "Family_History":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Family History of Thyroid Cancer:</strong><br>
+                        This graph illustrates the malignancy rates among individuals with and without a family history of thyroid cancer. The x-axis categorizes individuals into "Yes" (with family history) and "No" (without family history), while the y-axis represents the proportion of malignant cases. The bars are color-coded green for "No" and red for "Yes," with their heights showing the relative malignancy rates in each group.
+                    `);
+                    break;
+                case "Radiation_Exposure":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Radiation Exposure History:</strong><br>
+                        This graph displays the malignancy rates for individuals who have or have not been exposed to radiation. The x-axis contains two categories: "Yes" (radiation exposure) and "No" (no radiation exposure). The y-axis represents the proportion of malignant cases in each category. The bars are color-coded green for "No" and red for "Yes," with their heights indicating the malignancy rates associated with radiation exposure.
+                    `);
+                    break;
+                case "Iodine_Deficiency":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Iodine Deficiency Status:</strong><br>
+                        This graph presents the malignancy rates for individuals with and without iodine deficiency. The x-axis categorizes the groups into "Yes" (iodine deficiency present) and "No" (no iodine deficiency). The y-axis shows the proportion of malignant cases within each category. The bars are color-coded green for "No" and red for "Yes," with their heights representing the malignancy rates in each group.
+                    `);
+                    break;
+                case "Smoking":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Smoking Status:</strong><br>
+                        This graph compares the malignancy rates between smokers and non-smokers. The x-axis categorizes individuals into "Yes" (smokers) and "No" (non-smokers), while the y-axis represents the proportion of malignant thyroid cancer cases within each group. The bars are color-coded green for "No" and red for "Yes," with their heights indicating the malignancy rates for smokers and non-smokers.
+                    `);
+                    break;
+                case "Obesity":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Obesity Status:</strong><br>
+                        This graph visualizes the malignancy rates among individuals categorized by obesity status. The x-axis differentiates between "Yes" (obese individuals) and "No" (non-obese individuals). The y-axis represents the proportion of malignant thyroid cancer cases in each category. The bars are color-coded green for "No" and red for "Yes," with their heights displaying the malignancy rates for both groups.
+                    `);
+                    break;
+                case "Thyroid_Cancer_Risk":
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
+                        <strong>Clinical Risk Assessment:</strong><br>
+                        This graph shows the malignancy rates for individuals classified into different clinical risk levels: "Low," "Medium," and "High." The x-axis categorizes the risk levels, while the y-axis represents the proportion of malignant cases within each category. The bars follow a traffic-light color gradient: green for "Low," orange for "Medium," and red for "High," with their heights indicating the malignancy rates associated with each risk level.
+                    `);
+                    break;
+                default:
+                    sampleTextContainer = $("<div class='sample-text-container'></div>").text("No description available for " + key);
+            }
+
             chartDiv.append(chartInnerDiv); // Append the chart first
-            chartDiv.append(sampleTextContainer); // Append text separately
+            chartDiv.append(sampleTextContainer); // Append description text separately
 
             chartContainer.append(chartDiv); // Append the entire structure
         });
