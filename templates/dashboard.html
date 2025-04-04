@@ -6,111 +6,162 @@
     <title>Cancer Data Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
+    <style> /* Global styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
         }
+        
+        /* Chart container */
         .chart-container {
-    display: flex;
-    flex-direction: column; /* Stack charts vertically */
-    align-items: center; /* Center charts horizontally */
-    gap: 20px; /* Space between charts */
-    padding: 30px;
-}
-.map-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers everything inside */
-    justify-content: center; /* Centers vertically if needed */
-    width: 100%;
-    max-width: 900px; /* Adjust based on your design */
-    margin: 0 auto; /* Centers the whole wrapper */
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-#map-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.progress-bar {
-    width: 80%;
-    height: 10px;
-    background: #ddd;
-    border-radius: 5px;
-    margin: 15px 0;
-}
-
-.progress {
-    height: 100%;
-    background: #007bff;
-    border-radius: 5px;
-    width: 0%; /* This should be updated dynamically */
-}
-
-.navigation {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 10px;
-}
-
-.nav-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.nav-button:hover {
-    background: #0056b3;
-}
-
-       /* Modern tab styling */
-.tabs {
-    display: flex;
-    justify-content: center;
-    margin: 20px auto;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.tab-button {
-    background: #f0f0f0;
-    border: none;
-    padding: 12px 20px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.25s ease-in-out;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    color: #333;
-}
-
-.tab-button:hover {
-    background: #e0e0e0;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    transform: translateY(-1px);
-}
-
-.tab-button.active {
-    background: #4A90E2;
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
-}
-
-       
-    </style>
+            display: flex;
+            flex-direction: column; /* Stack charts vertically */
+            align-items: center; /* Center charts horizontally */
+            gap: 20px; /* Space between charts */
+            padding: 40px;
+        }
+        
+        /* Map wrapper */
+        .map-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 25px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Map container */
+        #map-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            width: 80%;
+            height: 12px;
+            background: #e2e2e2;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #ff4081; /* Primary pink color */
+            border-radius: 8px;
+            width: 0%; /* This should be updated dynamically */
+        }
+        
+        /* Navigation buttons */
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            background: #ff4081; /* Primary pink color */
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            background: #f50057; /* Darker pink on hover */
+        }
+        
+        /* Tabs section */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: white;
+            padding: 12px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Tab buttons */
+        .tab-button {
+            background: #f7f7f7;
+            border: none;
+            padding: 12px 22px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+        
+        .tab-button:hover {
+            background: #f1f1f1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .tab-button.active {
+            background: #ff4081; /* Primary pink color */
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+        }
+        
+        /* Chart wrapper */
+        .chart-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            min-width: 450px;
+            max-width: 800px;
+            background: white;
+            padding: 25px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        /* Chart content */
+        .chart-content {
+            min-width: 500px;
+            flex-grow: 1;
+        }
+        
+        /* Sample text container */
+        .sample-text-container {
+            font-size: 14px;
+            color: #333;
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            min-width: 180px;
+            text-align: justify;
+            margin-left: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        </style>
 </head>
 <body>
     <h1>Cancer Data Dashboard</h1>
@@ -271,49 +322,7 @@
     });
     </script>
     
-    <style>
-        .chart-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between; /* Distribute charts evenly */
-            gap: 20px; /* Space between charts */
-            padding: 30px;
-        }
-
-        .chart-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    min-width: 450px;
-    max-width: 800px;
-    background: white;
-    padding: 20px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.chart-content {
-    min-width: 500px;
-    flex-grow: 1; /* Ensures the chart takes available space */
-}
-
-
-.sample-text-container {
-    font-size: 14px;
-    color: #333;
-    background-color: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    min-width: 150px;
-    text-align: justify; /* This makes the text justified */
-    margin-left: 10px; /* Pushes text away from chart */
-}
-
-    </style>
+    
 
     <script>
         let lungTypes = ["lung", "prevalence", "deaths", "development"];
