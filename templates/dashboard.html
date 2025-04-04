@@ -114,6 +114,7 @@
 </head>
 <body>
     <h1>Cancer Data Dashboard</h1>
+    <p>Cancer data encompassing over 434,323 entries and 27 countries across 2 databases on Lung and Thyroid cancer, which were retrieved from Kaggle. Both databases were last updated in February of 2025.</p>
 
    <!-- Tabs for selecting Lungs, Thyroid, Dataset, and Links -->
 <div class="tabs">
@@ -127,6 +128,7 @@
     <!-- Wrapper Container -->
 <div class="map-wrapper">
     <!-- Container for the map -->
+     <h2>Interactive Map</h2>
     <div id="map-container">
         {{ main_map | safe }}
     </div>
@@ -145,15 +147,24 @@
 
 
     <div class="chart-container">
+        <h2>More Information</h2>
         <div id="bar-charts"></div>
     </div>
 
     <!-- Dataset Tab Content -->
-<div id="dataset-tab-content" style="display:none; padding: 30px;">
-    <h2>Dataset Information</h2>
-    <p>This section provides access to the raw datasets used in the dashboard.</p>
-    <!-- You can add a download button, table, or embedded data viewer here -->
-</div>
+    <div id="dataset-tab-content" style="display:none; padding: 30px;">
+        <h2>Dataset Information</h2>
+        <p>This section provides access to the raw datasets used in the dashboard.</p>
+        
+        <h3>Lung Cancer Risk in 25 Countries</h3>
+        <p>This dataset contains information related to lung cancer risk in 25 countries. You can access the dataset on Kaggle by following the link below:</p>
+        <a href="https://www.kaggle.com/datasets/aizahzeeshan/lung-cancer-risk-in-25-countries?select=lung_cancer_prediction_dataset.csv" target="_blank">Lung Cancer Risk Dataset</a>
+        
+        <h3>Thyroid Cancer Risk Dataset</h3>
+        <p>This dataset contains information related to thyroid cancer risk. You can access it on Kaggle via the link below:</p>
+        <a href="https://www.kaggle.com/datasets/mzohaibzeeshan/thyroid-cancer-risk-dataset" target="_blank">Thyroid Cancer Risk Dataset</a>
+    </div>
+    
 
 <!-- Links Tab Content -->
 <div id="links-tab-content" style="display:none; padding: 30px;">
@@ -162,8 +173,14 @@
         <li><a href="https://www.cancer.gov/" target="_blank">National Cancer Institute</a></li>
         <li><a href="https://www.who.int/" target="_blank">World Health Organization</a></li>
         <li><a href="https://seer.cancer.gov/" target="_blank">SEER Cancer Statistics</a></li>
+        <li><a href="https://www.iarc.who.int/" target="_blank">International Agency for Research on Cancer (IARC)</a></li>
+        <li><a href="https://www.uicc.org/" target="_blank">Union for International Cancer Control (UICC)</a></li>
+        <li><a href="https://internationalcancerfoundation.org/" target="_blank">International Cancer Foundation</a></li>
+        <li><a href="https://www.myeloma.org/" target="_blank">International Myeloma Foundation</a></li>
+        <li><a href="https://www.wcrf.org/" target="_blank">World Cancer Research Fund</a></li>
     </ul>
 </div>
+
 
 
     <script>

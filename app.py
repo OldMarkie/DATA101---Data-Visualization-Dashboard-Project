@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
 import numpy as np
 import pandas as pd
+import plotly
 import plotly.express as px
 
 app = Flask(__name__)
@@ -75,7 +76,7 @@ def mortality_chart_thyroid():
             title=f"Malignancy Rate by {col.replace('_', ' ')}",
             labels={"Diagnosis": "Malignancy Rate", col: col.replace('_', ' ')},
             color="Diagnosis",
-            color_continuous_scale="Reds",
+            color_continuous_scale="Pinkyl",
             category_orders=category_orders
         )
 
@@ -124,7 +125,7 @@ def mortality_chart():
             title=f"Mortality Rate by {column}",
             labels={"Mortality_Rate": "Mortality Rate", column: column},
             color="Mortality_Rate", 
-            color_continuous_scale="Blues",
+            color_continuous_scale="Pinkyl",
             category_orders={"Age_Group": age_order, "Air_Pollution_Exposure": airpol_order}  # Enforcing the order for Age_Group
         )
 
@@ -137,18 +138,30 @@ def mortality_chart():
 
 
 def generate_highlight_map(data, title):
+    # Get a list of unique countries from the data
+    countries = data['Country'].unique()
+
+    # Generate a unique color for each country from the predefined color scale
+    color_palette = plotly.colors.qualitative.Pastel  # You can choose another palette like Set2, Set3, etc.
+    
+    # Create a color map for the countries
+    color_map = {country: color_palette[i % len(color_palette)] for i, country in enumerate(countries)}
+
+    # Create the choropleth map with unique colors
     fig = px.choropleth(
         data,
         locations="Country",
         locationmode="country names",
         color="Country",
-        color_discrete_map={"Country": "#ff69b4"},
+        color_discrete_map=color_map,
         title=title
     )
+    
     fig.update_layout(
-        coloraxis_showscale=True,
+        coloraxis_showscale=False,  # Disable the color scale, as it's not needed for unique colors
         coloraxis_colorbar_title="Highlighted Countries"
     )
+    
     return fig.to_html(full_html=False)
 
 def generate_thyroid_choropleth(df, column_name, title):
