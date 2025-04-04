@@ -1,26 +1,8 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
 }
 
-.chart-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* Centers the charts */
-    gap: 20px; /* Space between charts */
-    padding: 20px;
-}
 
-.chart-wrapper {
-    width: 45%; /* Ensures two charts per row */
-    min-width: 400px;
-    background: white; /* Background color */
-    padding: 15px;
-    border: 2px solid #ccc; /* Gray stroke around charts */
-    border-radius: 10px; /* Rounded edges */
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    text-align: center;
-}
 
 
 

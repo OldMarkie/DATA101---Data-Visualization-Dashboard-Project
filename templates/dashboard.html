@@ -93,7 +93,7 @@
 
     <script>
        function loadMortalityCharts() {
-    $.getJSON("/mortality_chart", function(data) {
+        $.getJSON("/mortality_chart", function(data) {
         let chartContainer = $("#bar-charts");
         chartContainer.html(""); // Clear previous charts
 
@@ -210,19 +210,40 @@
 
         function switchTab(tabName) {
             currentTab = tabName;
-            index = 0; // Reset index when switching tabs
-            document.querySelectorAll(".tab-button").forEach(button => button.classList.remove("active"));
-            document.querySelector(`.tab-button:nth-child(${tabName === 'lungs' ? 1 : 2})`).classList.add("active");
+    index = 0; // Reset index when switching tabs
+    document.querySelectorAll(".tab-button").forEach(button => button.classList.remove("active"));
+    document.querySelector(`.tab-button:nth-child(${tabName === 'lungs' ? 1 : 2})`).classList.add("active");
 
-            loadCancerMap();
+    loadCancerMap();
 
-            // Load bar charts only for the lungs tab
-            if (tabName === "lungs") {
-                loadMortalityCharts();
-            } else {
-                $("#bar-charts").html(""); // Clear charts when switching to thyroid
-            }
-        }
+    // Load mortality charts based on the selected tab
+    if (tabName === "lungs") {
+        loadMortalityCharts(); // Load for lungs
+    } else if (tabName === "thyroid") {
+        loadThyroidMortalityCharts(); // Load for thyroid
+    }
+}
+
+// New function to load thyroid mortality charts
+function loadThyroidMortalityCharts() {
+    $.getJSON("/mortality_chart_thyroid", function(data) {
+        let chartContainer = $("#bar-charts");
+        chartContainer.html(""); // Clear previous charts
+
+        Object.keys(data).forEach((key) => {
+            let chartDiv = $("<div class='chart-wrapper'></div>"); 
+            let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]); 
+            
+            let sampleTextContainer = $("<div class='sample-text-container'></div>").text("Sample Text for " + key);
+            
+            chartDiv.append(chartInnerDiv); // Append the chart first
+            chartDiv.append(sampleTextContainer); // Append text separately
+
+            chartContainer.append(chartDiv); // Append the entire structure
+        });
+    });
+}
+
 
         setInterval(() => {
             nextCancerMap();

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify
+import numpy as np
 import pandas as pd
 import plotly.express as px
 
@@ -12,6 +13,105 @@ def load_data():
     lung_df = pd.read_csv(lung_cancer_file)
     thyroid_df = pd.read_csv(thyroid_cancer_file)
     return lung_df, thyroid_df
+
+@app.route('/mortality_chart_thyroid')
+def mortality_chart_thyroid():
+    # Load the data
+    _, thyroid_df = load_data()
+
+    # Ensure Diagnosis is numeric
+    thyroid_df['Diagnosis'] = thyroid_df['Diagnosis'].map({"Malignant": 1, "Benign": 0})
+
+    # Create age groups for thyroid cancer data
+    thyroid_df['Age_Group'] = pd.cut(thyroid_df['Age'],
+                                     bins=[0, 30, 60, 100],
+                                     labels=['<30', '30-60', '60+'])
+
+    # List of columns to group by for thyroid cancer risk data
+    x_columns = [
+        "Gender", "Family_History", "Radiation_Exposure", "Iodine_Deficiency",
+        "Smoking", "Obesity", "Thyroid_Cancer_Risk", "Age_Group"
+    ]
+
+    charts = {}
+
+    # Define the order for Age Group categories
+    age_order = ["<30", "30-60", "60+"]
+    cancer_risk_order = ["Low", "Medium", "High"]
+
+    # Function to plot diagnosis with insights
+    def plot_diagnosis_chart(df_grouped, column, title, colors=None, ordered_categories=None, allow_insight=True):
+    # Reorder categories if specified
+        if ordered_categories:
+            df_grouped = df_grouped.set_index(column).reindex(ordered_categories).reset_index()
+
+        # Ensure the colors list is long enough to match the number of unique groups
+        if colors:
+            # Repeat the colors if necessary to match the number of groups
+            colors = (colors * (len(df_grouped) // len(colors) + 1))[:len(df_grouped)]
+
+        # Plot bars
+        fig = px.bar(
+            df_grouped,
+            x=column,
+            y="Diagnosis",  # Assuming 'Diagnosis' represents the malignancy rate
+            title=title,
+            labels={"Diagnosis": "Malignancy Rate", column: column},
+            color="Diagnosis",
+            color_continuous_scale="Blues",
+            category_orders={"Age_Group": age_order, "Thyroid_Cancer_Risk": cancer_risk_order}
+        )
+
+        # Annotate values
+        for index, value in enumerate(df_grouped["Diagnosis"].values):
+            fig.add_annotation(
+                x=df_grouped[column].iloc[index],
+                y=value,
+                text=f"{value:.2%}",
+                showarrow=True,
+                arrowhead=2,
+                arrowsize=1,
+                font=dict(size=10, color="black")
+            )
+
+        # Add insights for binary comparisons (if allowed)
+        if allow_insight and len(df_grouped) == 2:
+            baseline = df_grouped["Diagnosis"].iloc[0]
+            comparison = df_grouped["Diagnosis"].iloc[1]
+
+            if comparison > baseline:
+                increase = ((comparison - baseline) / baseline) * 100 if baseline != 0 else np.inf
+                title += f"\n({column} ↑ Risk by {increase:.1f}%)"
+            else:
+                decrease = ((baseline - comparison) / baseline) * 100 if baseline != 0 else np.inf
+                title += f"\n({column} ↓ Risk by {decrease:.1f}%)"
+
+        return fig
+
+
+    # Loop through each column and generate the plots
+    for column in x_columns:
+        df_grouped = thyroid_df.groupby(column)['Diagnosis'].mean().round(2).reset_index()
+
+        # Customize insights for gender and allow-insight categories
+        if column == "Gender":
+            allow_insight = False
+        else:
+            allow_insight = True
+
+        # Generate the plot for each factor
+        fig = plot_diagnosis_chart(
+            df_grouped, column, f"Malignancy Rate by {column}",
+            colors=['green', 'red'],  # Customize colors as needed
+            ordered_categories=["No", "Yes"] if column in ["Family_History", "Radiation_Exposure", "Iodine_Deficiency", "Smoking", "Obesity"] else None,
+            allow_insight=allow_insight
+        )
+
+        fig.update_layout(xaxis_tickangle=-45)
+        charts[column] = fig.to_html(full_html=False)
+
+    return jsonify(charts)
+
 
 @app.route('/mortality_chart')
 def mortality_chart():
@@ -39,9 +139,10 @@ def mortality_chart():
 
     # Define the order for Age Group categories
     age_order = ["<30", "30-60", "60+"]
+    airpol_order = ["Low", "Medium", "High"]
 
     for column in x_columns:
-        df_grouped = lung_df.groupby(column)["Mortality_Rate"].mean().reset_index()
+        df_grouped = lung_df.groupby(column)["Mortality_Rate"].mean().round(2).reset_index()
 
         fig = px.bar(
             df_grouped, 
@@ -51,7 +152,7 @@ def mortality_chart():
             labels={"Mortality_Rate": "Mortality Rate", column: column},
             color="Mortality_Rate", 
             color_continuous_scale="Blues",
-            category_orders={"Age_Group": age_order}  # Enforcing the order for Age_Group
+            category_orders={"Age_Group": age_order, "Air_Pollution_Exposure": airpol_order}  # Enforcing the order for Age_Group
         )
 
         fig.update_layout(xaxis_tickangle=-45)
