@@ -89,9 +89,13 @@ def mortality_chart_thyroid():
 
 @app.route('/mortality_chart')
 def mortality_chart():
+    from flask import request
     lung_df, _ = load_data()
 
-    # Grouping Age into three distinct groups
+    country = request.args.get("country")
+    if country and country != "All":
+        lung_df = lung_df[lung_df["Country"] == country]
+
     def categorize_age(age):
         if age < 30:
             return "<30"
@@ -100,18 +104,14 @@ def mortality_chart():
         else:
             return "60+"
 
-    # Apply the categorize_age function to the Age column
     lung_df["Age_Group"] = lung_df["Age"].apply(categorize_age)
 
-    # List of columns to group by
     x_columns = [
         "Treatment_Type", "Early_Detection", "Healthcare_Access", "Indoor_Pollution",
         "Occupational_Exposure", "Air_Pollution_Exposure", "Smoker", "Gender", "Age_Group"
     ]
 
     charts = {}
-
-    # Define the order for Age Group categories
     age_order = ["<30", "30-60", "60+"]
     airpol_order = ["Low", "Medium", "High"]
 
@@ -126,7 +126,7 @@ def mortality_chart():
             labels={"Mortality_Rate": "Mortality Rate", column: column},
             color="Mortality_Rate", 
             color_continuous_scale="Pinkyl",
-            category_orders={"Age_Group": age_order, "Air_Pollution_Exposure": airpol_order}  # Enforcing the order for Age_Group
+            category_orders={"Age_Group": age_order, "Air_Pollution_Exposure": airpol_order}
         )
 
         fig.update_layout(xaxis_tickangle=-45)
@@ -134,6 +134,12 @@ def mortality_chart():
 
     return jsonify(charts)
 
+
+@app.route('/get_countries')
+def get_countries():
+    lung_df, _ = load_data()
+    countries = sorted(lung_df["Country"].dropna().unique().tolist())
+    return jsonify(countries)
 
 
 

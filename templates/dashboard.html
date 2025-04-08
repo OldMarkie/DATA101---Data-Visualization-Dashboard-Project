@@ -197,10 +197,18 @@
 </div>
 
 
-    <div class="chart-container">
-        <h2>More Information</h2>
-        <div id="bar-charts"></div>
-    </div>
+<div class="chart-container">
+    <h2>More Information</h2>
+
+    <!-- Country Filter Dropdown -->
+    <label for="country-filter">Filter by Country:</label>
+    <select id="country-filter" onchange="loadMortalityCharts()">
+        <option value="All">All Countries</option>
+    </select>
+
+    <div id="bar-charts"></div>
+</div>
+
 
     <!-- Dataset Tab Content -->
     <div id="dataset-tab-content" style="display:none; padding: 30px;">
@@ -236,7 +244,8 @@
 
     <script>
       function loadMortalityCharts() {
-    $.getJSON("/mortality_chart", function(data) {
+        const selectedCountry = $("#country-filter").val();
+        $.getJSON("/mortality_chart", { country: selectedCountry }, function(data) {
         let chartContainer = $("#bar-charts");
         chartContainer.html(""); // Clear previous charts
 
@@ -317,9 +326,23 @@
 
 
 
-    $(document).ready(function() {
-        loadMortalityCharts(); // Load charts when the page is ready
+$(document).ready(function() {
+    // Load the country list for the filter dropdown
+    $.getJSON("/get_countries", function(data) {
+        console.log("Received countries:", data);  // For debugging
+        const dropdown = $("#country-filter");
+        dropdown.html('<option value="All">All Countries</option>');
+        data.forEach(country => {
+            dropdown.append(`<option value="${country}">${country}</option>`);
+        });
     });
+
+    loadMortalityCharts(); // Load charts for initial view
+});
+
+
+    
+
     </script>
     
     
@@ -399,18 +422,16 @@
 
 // New function to load thyroid mortality charts
 function loadThyroidMortalityCharts() {
-    $.getJSON("/mortality_chart_thyroid", function(data) {
-        let chartContainer = $("#bar-charts");
-        chartContainer.html(""); // Clear previous charts
+    const selectedCountry = $("#country-filter").val();
 
-        Object.keys(data).forEach((key) => {
-            console.log("Key from data:", key); // Log the key to the console for debugging
+$.getJSON("/mortality_chart_thyroid", { country: selectedCountry }, function(data) {
+    let chartContainer = $("#bar-charts");
+    chartContainer.html(""); // Clear previous charts
 
-            let chartDiv = $("<div class='chart-wrapper'></div>");
-            let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]);
-
-            let sampleTextContainer;
-
+    Object.keys(data).forEach((key) => {
+        let chartDiv = $("<div class='chart-wrapper'></div>");
+        let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]);
+        let sampleTextContainer;
             // Replace sample text with specific descriptions based on key
             switch(key) {
                 case "Age_Group":
