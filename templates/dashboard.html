@@ -200,17 +200,25 @@
 <div class="chart-container">
     <h2>More Information</h2>
 
-   <!-- Modern Country Filter Dropdown -->
-<div class="filter-container">
-    <label for="country-filter" class="filter-label">Filter by Country:</label>
-    <select id="country-filter" class="filter-select" onchange="onCountryChange()">
-        <option value="All">All Countries</option>
-    </select>
-</div>
+    <!-- Modern Country Filter Dropdown -->
+    <div class="filter-container">
+        <label for="country-filter" class="filter-label">Filter by Country:</label>
+        <select id="country-filter" class="filter-select" onchange="onCountryChange()">
+            <option value="All">All Countries</option>
+        </select>
 
+        <label for="dev-filter" class="filter-label">Development Status:</label>
+        <select id="dev-filter" class="filter-select" onchange="onDevStatusChange()">
+            <option value="All">All</option>
+            <option value="Developed">Developed</option>
+            <option value="Developing">Developing</option>
+        </select>
 
+       
+    </div>
     <div id="bar-charts"></div>
-</div>
+
+   
 
 
     <!-- Dataset Tab Content -->
@@ -246,13 +254,21 @@
 <style>
 
 .filter-container {
+    position: sticky;
+    top: 65px; /* adjust depending on your tab height */
+    z-index: 9;
+    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
     gap: 12px;
     flex-wrap: wrap;
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #eee;
 }
+
 
 .filter-label {
     font-size: 16px;
@@ -282,20 +298,48 @@
 </style>
 
     <script>
-      function loadMortalityCharts() {
-        const selectedCountry = $("#country-filter").val();
-        $.getJSON("/mortality_chart", { country: selectedCountry }, function(data) {
+        let selectedDevStatus = "All";
+        function onCountryChange() {
+    selectedCountry = $("#country-filter").val();
+    if (currentTab === "lungs") {
+        loadMortalityCharts();
+    } else if (currentTab === "thyroid") {
+        loadThyroidMortalityCharts();
+    }
+}
+
+function onDevStatusChange() {
+    selectedDevStatus = $("#dev-filter").val();
+    if (currentTab === "lungs") {
+        loadMortalityCharts();
+    }
+}
+
+
+
+
+function loadMortalityCharts() {
+    const selectedCountry = $("#country-filter").val();
+    const selectedDevStatus = $("#dev-filter").val();
+    console.log("Fetching with:", {
+    country: selectedCountry,
+    dev_status: selectedDevStatus
+});
+
+    $.getJSON("/mortality_chart", { 
+        country: selectedCountry,
+        dev_status: selectedDevStatus
+    }, function(data) {
         let chartContainer = $("#bar-charts");
         chartContainer.html(""); // Clear previous charts
 
         Object.keys(data).forEach((key) => {
-            console.log("Key from data:", key); // Log the key to the console for debugging
+            console.log("Key from data:", key);
             let chartDiv = $("<div class='chart-wrapper'></div>"); 
             let chartInnerDiv = $("<div class='chart-content'></div>").html(data[key]); 
 
             let sampleTextContainer;
-            
-            // Replace sample text with specific descriptions based on key
+
             switch(key) {
                 case "Early_Detection":
                     sampleTextContainer = $("<div class='sample-text-container'></div>").html(`
@@ -355,13 +399,13 @@
                     sampleTextContainer = $("<div class='sample-text-container'></div>").text("No description available.");
             }
 
-            chartDiv.append(chartInnerDiv); // Append the chart first
-            chartDiv.append(sampleTextContainer); // Append description text separately
-
-            chartContainer.append(chartDiv); // Append the entire structure
+            chartDiv.append(chartInnerDiv);
+            chartDiv.append(sampleTextContainer);
+            chartContainer.append(chartDiv);
         });
     });
 }
+
 
 
 

@@ -86,8 +86,17 @@ def mortality_chart():
     lung_df, _ = load_data()
 
     country = request.args.get("country")
+    dev_status = request.args.get("dev_status")
+
     if country and country != "All":
         lung_df = lung_df[lung_df["Country"] == country]
+
+    if dev_status and dev_status != "All":
+        if "Developed_or_Developing" in lung_df.columns:
+            lung_df = lung_df[lung_df["Developed_or_Developing"] == dev_status]
+
+    if lung_df.empty:
+        return jsonify({})  # <-- Prevent error if no data matches
 
     def categorize_age(age):
         if age < 30:
@@ -109,15 +118,21 @@ def mortality_chart():
     airpol_order = ["Low", "Medium", "High"]
 
     for column in x_columns:
+        if column not in lung_df.columns:
+            continue
+
         df_grouped = lung_df.groupby(column)["Mortality_Rate"].mean().round(2).reset_index()
 
+        if df_grouped.empty:
+            continue
+
         fig = px.bar(
-            df_grouped, 
-            x=column, 
-            y="Mortality_Rate", 
+            df_grouped,
+            x=column,
+            y="Mortality_Rate",
             title=f"Mortality Rate by {column}",
             labels={"Mortality_Rate": "Mortality Rate", column: column},
-            color="Mortality_Rate", 
+            color="Mortality_Rate",
             color_continuous_scale="Pinkyl",
             category_orders={"Age_Group": age_order, "Air_Pollution_Exposure": airpol_order}
         )
@@ -126,6 +141,8 @@ def mortality_chart():
         charts[column] = fig.to_html(full_html=False)
 
     return jsonify(charts)
+
+
 
 
 @app.route('/get_countries')
