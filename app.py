@@ -17,17 +17,16 @@ def load_data():
 
 @app.route('/mortality_chart_thyroid')
 def mortality_chart_thyroid():
-    import pandas as pd
-    import plotly.express as px
-    from flask import jsonify
-
-    # Load the thyroid cancer dataset
+    from flask import request
     df = pd.read_csv("thyroid_cancer_risk_data.csv")
 
-    # Convert Diagnosis to binary: Malignant = 1, Benign = 0
+    # Apply country filter if provided
+    country = request.args.get("country")
+    if country and country != "All":
+        df = df[df["Country"] == country]
+
     df['Diagnosis'] = df['Diagnosis'].map({'Benign': 0, 'Malignant': 1})
 
-    # Create age groups
     def categorize_age(age):
         if age < 30:
             return "<30"
@@ -38,16 +37,12 @@ def mortality_chart_thyroid():
 
     df["Age_Group"] = df["Age"].apply(categorize_age)
 
-    # Define columns to visualize
     x_columns = [
         "Age_Group", "Gender", "Family_History", "Radiation_Exposure",
         "Iodine_Deficiency", "Smoking", "Obesity", "Thyroid_Cancer_Risk"
     ]
 
-    # Chart storage
     charts = {}
-
-    # Category orders (for cleaner visual consistency)
     category_orders = {
         "Age_Group": ["<30", "30-60", "60+"],
         "Thyroid_Cancer_Risk": ["Low", "Medium", "High"],
@@ -62,10 +57,7 @@ def mortality_chart_thyroid():
         if col not in df.columns:
             continue
 
-        # Drop NaNs to avoid plotting issues
         df_clean = df.dropna(subset=[col, 'Diagnosis'])
-
-        # Group and calculate malignancy rate
         df_grouped = df_clean.groupby(col)['Diagnosis'].mean().reset_index()
         df_grouped['Diagnosis'] = df_grouped['Diagnosis'].round(2)
 
@@ -84,6 +76,7 @@ def mortality_chart_thyroid():
         charts[col] = fig.to_html(full_html=False)
 
     return jsonify(charts)
+
 
 
 
@@ -139,6 +132,11 @@ def mortality_chart():
 def get_countries():
     lung_df, _ = load_data()
     countries = sorted(lung_df["Country"].dropna().unique().tolist())
+    return jsonify(countries)
+@app.route('/get_countries_thyroid')
+def get_countries_thyroid():
+    _, thyroid_df = load_data()
+    countries = sorted(thyroid_df["Country"].dropna().unique().tolist())
     return jsonify(countries)
 
 

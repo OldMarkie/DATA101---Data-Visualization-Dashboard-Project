@@ -202,7 +202,7 @@
 
     <!-- Country Filter Dropdown -->
     <label for="country-filter">Filter by Country:</label>
-    <select id="country-filter" onchange="loadMortalityCharts()">
+    <select id="country-filter" onchange="onCountryChange()">
         <option value="All">All Countries</option>
     </select>
 
@@ -327,17 +327,7 @@
 
 
 $(document).ready(function() {
-    // Load the country list for the filter dropdown
-    $.getJSON("/get_countries", function(data) {
-        console.log("Received countries:", data);  // For debugging
-        const dropdown = $("#country-filter");
-        dropdown.html('<option value="All">All Countries</option>');
-        data.forEach(country => {
-            dropdown.append(`<option value="${country}">${country}</option>`);
-        });
-    });
-
-    loadMortalityCharts(); // Load charts for initial view
+    switchTab("lungs");
 });
 
 
@@ -351,6 +341,7 @@ $(document).ready(function() {
         let lungTypes = ["lung", "prevalence", "deaths", "development"];
         let thyroidTypes = ["thyroid", "thyroid_prevalence", "radiation_exposure", "smoking", "obesity", "diabetes"];
         let currentTab = "lungs";
+        let selectedCountry = "All";
         let index = 0;
         let intervalTime = 30000; // 30 seconds
         let progressBar = document.getElementById("progress-bar");
@@ -395,26 +386,56 @@ $(document).ready(function() {
             requestAnimationFrame(step);
         }
 
-        function switchTab(tabName) {
+function switchTab(tabName) {
     currentTab = tabName;
     index = 0;
 
-    // Handle active tab button
+    // Update tab UI
     document.querySelectorAll(".tab-button").forEach(button => button.classList.remove("active"));
-    let tabIndex = tabName === 'lungs' ? 0 : tabName === 'thyroid' ? 1 : tabName === 'dataset' ? 2 : 3;
+    const tabIndex = tabName === 'lungs' ? 0 : tabName === 'thyroid' ? 1 : tabName === 'dataset' ? 2 : 3;
     document.querySelectorAll(".tab-button")[tabIndex].classList.add("active");
 
-    // Hide/show sections
+    // Show/hide sections
     $("#map-container").parent().toggle(tabName === "lungs" || tabName === "thyroid");
     $(".chart-container").toggle(tabName === "lungs" || tabName === "thyroid");
     $("#dataset-tab-content").toggle(tabName === "dataset");
     $("#links-tab-content").toggle(tabName === "links");
 
+    // Update country list and load charts/maps
     if (tabName === "lungs") {
-        loadCancerMap();
-        loadMortalityCharts();
+        $.getJSON("/get_countries", function(data) {
+            const dropdown = $("#country-filter");
+            dropdown.html('<option value="All">All Countries</option>');
+            data.forEach(country => {
+                dropdown.append(`<option value="${country}">${country}</option>`);
+            });
+
+            selectedCountry = "All";
+            loadCancerMap();
+            loadMortalityCharts();
+        });
     } else if (tabName === "thyroid") {
-        loadCancerMap();
+        $.getJSON("/get_countries_thyroid", function(data) {
+            const dropdown = $("#country-filter");
+            dropdown.html('<option value="All">All Countries</option>');
+            data.forEach(country => {
+                dropdown.append(`<option value="${country}">${country}</option>`);
+            });
+
+            selectedCountry = "All";
+            loadCancerMap();
+            loadThyroidMortalityCharts();
+        });
+    }
+}
+
+
+function onCountryChange() {
+    selectedCountry = $("#country-filter").val();
+
+    if (currentTab === "lungs") {
+        loadMortalityCharts();
+    } else if (currentTab === "thyroid") {
         loadThyroidMortalityCharts();
     }
 }
