@@ -207,12 +207,14 @@
             <option value="All">All Countries</option>
         </select>
 
-        <label for="dev-filter" class="filter-label">Development Status:</label>
-        <select id="dev-filter" class="filter-select" onchange="onDevStatusChange()">
-            <option value="All">All</option>
-            <option value="Developed">Developed</option>
-            <option value="Developing">Developing</option>
-        </select>
+        <div id="dev-filter-container">
+            <label for="dev-filter" class="filter-label">Development Status:</label>
+            <select id="dev-filter" class="filter-select" onchange="onDevStatusChange()">
+                <option value="All">All</option>
+                <option value="Developed">Developed</option>
+                <option value="Developing">Developing</option>
+            </select>
+        </div>
 
        
     </div>
@@ -483,8 +485,11 @@ function switchTab(tabName) {
     $(".chart-container").toggle(tabName === "lungs" || tabName === "thyroid");
     $("#dataset-tab-content").toggle(tabName === "dataset");
     $("#links-tab-content").toggle(tabName === "links");
+    // Show/hide development status filter
+    $("#dev-filter-container").toggle(tabName === "lungs");
 
-    // Update country list and load charts/maps
+
+    // Load country filter and charts
     if (tabName === "lungs") {
         $.getJSON("/get_countries", function(data) {
             const dropdown = $("#country-filter");
