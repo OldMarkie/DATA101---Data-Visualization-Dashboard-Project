@@ -200,11 +200,14 @@
 <div class="chart-container">
     <h2>More Information</h2>
 
-    <!-- Country Filter Dropdown -->
-    <label for="country-filter">Filter by Country:</label>
-    <select id="country-filter" onchange="onCountryChange()">
+   <!-- Modern Country Filter Dropdown -->
+<div class="filter-container">
+    <label for="country-filter" class="filter-label">Filter by Country:</label>
+    <select id="country-filter" class="filter-select" onchange="onCountryChange()">
         <option value="All">All Countries</option>
     </select>
+</div>
+
 
     <div id="bar-charts"></div>
 </div>
@@ -240,7 +243,43 @@
     </ul>
 </div>
 
+<style>
 
+.filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.filter-select {
+    padding: 10px 16px;
+    font-size: 16px;
+    border: 2px solid #ff4081;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.filter-select:hover,
+.filter-select:focus {
+    border-color: #f50057;
+    box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.2);
+}
+
+</style>
 
     <script>
       function loadMortalityCharts() {
